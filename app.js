@@ -62,6 +62,7 @@ const questions=[
 ];
 let qi=0,score=0,answered=false,quizTimer=null,advanceTimer=null,timeLeft=12;
 const quizCategories=['1-БӨЛІМ · ХРОНОЛОГИЯ','2-БӨЛІМ · ТАРИХИ ТҰЛҒАЛАР','3-БӨЛІМ · МАЙДАНДАҒЫ ОҚИҒАЛАР','4-БӨЛІМ · ҚАЗАҚСТАН ТЫЛДА','5-БӨЛІМ · СОҒЫСТАН КЕЙІН'];
+const quizIntro=document.getElementById('quizIntro'),quizTop=document.getElementById('quizTop'),startQuizButton=document.getElementById('startQuiz');
 const qText=document.getElementById('questionText'),answers=document.getElementById('answers'),feedback=document.getElementById('feedback'),next=document.getElementById('nextQuestion'),result=document.getElementById('quizResult'),area=document.getElementById('quizArea'),timerLabel=document.getElementById('quiz-timer');
 function stopQuizClocks(){if(quizTimer)clearInterval(quizTimer);if(advanceTimer)clearTimeout(advanceTimer);quizTimer=null;advanceTimer=null}
 function startQuizClock(){timeLeft=12;timerLabel.textContent=`${timeLeft} сек`;timerLabel.classList.remove('urgent');quizTimer=setInterval(()=>{timeLeft--;timerLabel.textContent=`${timeLeft} сек`;if(timeLeft<=5)timerLabel.classList.add('urgent');if(timeLeft<=0){stopQuizClocks();chooseAnswer(-1)}},1000)}
@@ -70,6 +71,7 @@ function finishQuiz(){stopQuizClocks();area.hidden=true;result.hidden=false;cons
 function advanceQuestion(){stopQuizClocks();if(qi<questions.length-1){qi++;loadQuestion()}else finishQuiz()}
 function chooseAnswer(i){if(answered)return;answered=true;stopQuizClocks();const q=questions[qi];answers.querySelectorAll('button').forEach((b,j)=>{b.disabled=true;if(j===q.correct)b.classList.add('correct');if(j===i&&i!==q.correct)b.classList.add('incorrect')});if(i===q.correct){score++;feedback.textContent='Дұрыс жауап! '+q.ex;feedback.classList.add('good')}else if(i===-1){feedback.textContent='Уақыт аяқталды. '+q.ex;feedback.classList.add('bad')}else{feedback.textContent='Дұрыс емес. '+q.ex;feedback.classList.add('bad')}document.getElementById('quiz-score').textContent=`Ұпай: ${score}`;timerLabel.textContent='Келесі…';next.disabled=false;advanceTimer=setTimeout(advanceQuestion,2200)}
 next.addEventListener('click',()=>{if(answered)advanceQuestion()});
-document.getElementById('restartQuiz').addEventListener('click',()=>{stopQuizClocks();qi=0;score=0;area.hidden=false;result.hidden=true;document.getElementById('restartQuiz').hidden=true;loadQuestion()});
-loadQuestion();
+function beginQuiz(){stopQuizClocks();qi=0;score=0;answered=false;quizIntro.hidden=true;quizTop.hidden=false;area.hidden=false;result.hidden=true;document.getElementById('restartQuiz').hidden=true;loadQuestion()}
+startQuizButton.addEventListener('click',beginQuiz);
+document.getElementById('restartQuiz').addEventListener('click',beginQuiz);
 const toggle=document.querySelector('.menu-toggle'),nav=document.getElementById('nav');toggle.addEventListener('click',()=>{const open=nav.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false')}));
